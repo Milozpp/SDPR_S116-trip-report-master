@@ -1,0 +1,95 @@
+@startuml
+
+title Get Tripid Trip Report
+
+autonumber
+
+skinparam roundcorner 10
+skinparam shadowing false
+skinparam sequence {
+  ArrowColor Black
+  LifeLineBorderColor #94a4b6
+  LifeLineBackgroundColor #d9e8fb
+  ParticipantBorderColor #94a4b6
+  ParticipantBackgroundColor #d9e8fb
+  ParticipantFontSize 13
+  MessageAlign center
+  NoteBorderColor blue
+}
+skinparam Note {
+  BorderColor black
+  BackgroundColor white
+}
+
+participant "GMA" as GMA
+participant "API Gateway" as API
+participant "Trip Report Details Lambda" as Lambda
+participant "WISE" as WISE
+participant "IGNITE" as IGNITE
+participant "TOMTOM" as TOMTOM
+
+note over API: SDPR
+/ note over Lambda, WISE: FCL
+
+activate GMA
+GMA -> API: send request
+
+activate API
+API -> Lambda: forward request
+
+activate Lambda
+Lambda -> Lambda: dispatch request
+
+Lambda -> WISE: getVehicleDetails
+activate WISE
+WISE -> Lambda: response
+deactivate WISE
+
+alt Vehicle NOT found
+  Lambda -> API: return //Vehicle not found//
+  API -> GMA: return //Vehicle not found//
+end
+
+Lambda -> Lambda: checkServiceId
+
+alt Service NOT enabled
+  Lambda -> API: return //Service not enabled//
+  API -> GMA: return //Service not enabled//
+end
+
+Lambda -> IGNITE: call ""GET /v1/tripreport/tripdetail""
+activate IGNITE
+IGNITE -> Lambda: response
+deactivate IGNITE
+
+alt Ignite response is\n//RELATIVE_DATA_NOT_FOUND//
+  Lambda -> API: return empty response
+end
+
+Lambda -> TOMTOM: //POI Search// and //Reverse Geocode//
+activate TOMTOM
+TOMTOM -> Lambda: response
+deactivate TOMTOM
+
+Lambda -> Lambda: //startLocation// and //endLocation// enrichment
+
+Lambda -> WISE: getVehicleCharacteristics
+activate WISE
+WISE -> Lambda: response
+deactivate WISE
+
+alt Vehicle is //BEV// or //PHEV//
+  Lambda -> Lambda: keep evMode data
+else
+  Lambda -> Lambda: hide evMode data
+end
+
+Lambda -> API: return trip report
+deactivate Lambda
+
+API -> GMA: return trip report
+deactivate API
+
+deactivate GMA
+
+@enduml

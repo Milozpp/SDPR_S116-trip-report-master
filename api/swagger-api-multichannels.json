@@ -1,0 +1,3168 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "version": "v1.0",
+        "title": "${SWAGGER_TITLE}",
+        "description": "${SWAGGER_DESCRIPTION}"
+    },
+    "host": "",
+    "basePath": "/",
+    "schemes": [
+        "https"
+    ],
+    "securityDefinitions": {
+        "api_key": {
+            "type": "apiKey",
+            "name": "x-api-key",
+            "in": "header"
+        },
+        "sigv4": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header",
+            "x-amazon-apigateway-authtype": "awsSigv4"
+        }
+    },
+    "x-amazon-apigateway-request-validators": {
+        "Validate body, query string parameters, and headers": {
+            "validateRequestParameters": true,
+            "validateRequestBody": true
+        }
+    },
+    "definitions": {
+        "TripReportSettings": {
+            "description": "schema for trip report settings configuration",
+            "type": "object",
+            "required": [
+                "isBusiness",
+                "isFavorite",
+                "fuelCostPerGallon",
+                "currency"
+            ],
+            "properties": {
+                "isBusiness": {
+                    "type": "boolean"
+                },
+                "isFavorite": {
+                    "type": "boolean"
+                },
+                "fuelCostPerGallon": {
+                    "type": "number"
+                },
+                "costPerEnergy": {
+                    "type": "number"
+                },
+                "currency": {
+                    "type": "string",
+                    "enum": [
+                        "USD",
+                        "CAD",
+                        "EURO",
+                        "CNY",
+                        "GBP",
+                        "BRL"
+                    ]
+                }
+            }
+        },
+        "TripReportSettingsRequest": {
+            "description": "request schema to change trip report settings configuration",
+            "$ref": "#/definitions/TripReportSettings"
+        },
+        "TripReportSettingsResponse": {
+            "description": "response schema to change trip report settings configuration",
+            "$ref": "#/definitions/TripReportSettings"
+        },
+        "DefaultTripReportSettings": {
+            "description": "schema for trip report default settings configuration",
+            "type": "object",
+            "required": [
+                "isBusiness",
+                "fuelCostPerGallon",
+                "currency"
+            ],
+            "properties": {
+                "isBusiness": {
+                    "type": "boolean"
+                },
+                "fuelCostPerGallon": {
+                    "type": "number"
+                },
+                "costPerEnergy": {
+                    "type": "number"
+                },
+                "currency": {
+                    "type": "string",
+                    "enum": [
+                        "USD",
+                        "CAD",
+                        "EURO",
+                        "CNY",
+                        "GBP",
+                        "BRL"
+                    ]
+                }
+            }
+        },
+        "DefaultTripReportSettingsRequest": {
+            "description": "request schema to change default trip report settings configuration",
+            "$ref": "#/definitions/DefaultTripReportSettings"
+        },
+        "DefaultTripReportSettingsResponse": {
+            "description": "response schema to change default trip report settings configuration",
+            "$ref": "#/definitions/DefaultTripReportSettings"
+        },
+        "Location": {
+            "type": "object",            
+            "properties": {
+                "latitude": {
+                    "type": "number"
+                },
+                "longitude": {
+                    "type": "number"
+                },
+                "timestamp": {
+                    "type": "number"
+                }
+            }
+        },
+        "RequiredLocation": {
+            "type": "object",
+            "required": [
+                "latitude",
+                "longitude",
+                "timestamp"
+            ],
+            "properties": {
+                "latitude": {
+                    "type": "number"
+                },
+                "longitude": {
+                    "type": "number"
+                },
+                "timestamp": {
+                    "type": "number"
+                }
+            }
+        },
+        "Address": {
+            "type": "object",
+            "properties": {
+                "streetNumber": {
+                    "type": "string"
+                },
+                "streetName": {
+                    "type": "string"
+                },
+                "municipality": {
+                    "type": "string"
+                },
+                "countrySecondarySubdivision": {
+                    "type": "string"
+                },
+                "countrySubdivision": {
+                    "type": "string"
+                },
+                "postalCode": {
+                    "type": "string"
+                },
+                "countryCode": {
+                    "type": "string"
+                },
+                "country": {
+                    "type": "string"
+                },
+                "countryCodeISO3": {
+                    "type": "string"
+                },
+                "freeformAddress": {
+                    "type": "string"
+                },
+                "localName": {
+                    "type": "string"
+                }
+            }
+        },
+        "ExtendedLocation": {
+            "type": "object",
+            "required": [
+                "latitude",
+                "longitude",
+                "timestamp"
+            ],
+            "properties": {
+                "latitude": {
+                    "type": "number"
+                },
+                "longitude": {
+                    "type": "number"
+                },
+                "timestamp": {
+                    "type": "number"
+                },
+                "locationName": {
+                    "type": "string"
+                },
+                "address": {
+                    "$ref": "#/definitions/Address"
+                }
+            }
+        },
+        "DriveStyle": {
+            "type": "object",
+            "properties": {
+                "style": {
+                    "type": "string"
+                },
+                "duration": {
+                    "type": "number"
+                }
+            }
+        },
+        "EcoData": {
+            "type": "object",
+            "required": [
+                "ecoScore",
+                "tripId",
+                "profile"
+            ],
+            "properties": {
+                "ecoScore": {
+                    "type": "number"
+                },
+                "tripId": {
+                    "type": "string"
+                },
+                "profile": {
+                    "type": "string"
+                }
+            }
+        },
+        "EvMode": {
+            "type": "object",
+            "properties": {
+                "locations": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/Location"
+                    }
+                }
+            }
+        },
+        "LocationHardEvent": {
+            "type": "object",
+            "properties": {
+                "latitude": {
+                    "type": "number"
+                },
+                "longitude": {
+                    "type": "number"
+                },
+                "timestamp": {
+                    "type": "number"
+                },
+                "duration": {
+                    "type": "number"
+                },
+                "distance": {
+                    "type": "number"
+                }
+            }
+        },
+        "Profile": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "timestamp": {
+                    "type": "number"
+                }
+            }
+        },
+        "TripReportData": {
+            "type": "object",
+            "required": [
+                "tripId",
+                "duration",
+                "distance",
+                "startTime",
+                "endTime",
+                "averageSpeed",
+                "topSpeed",
+                "dayDrive",
+                "nightDrive",
+                "isBusinessTrip",
+                "isFavouriteTrip",
+                "startLocation",
+                "endLocation",
+                "driveStyles",
+                "cost",
+                "encodedMapData",
+                "fullLocation",
+                "ecoData",
+                "profiles"
+            ],
+            "properties": {
+                "tripId": {
+                    "type": "string"
+                },
+                "travelDate": {
+                    "type": "number"
+                },
+                "duration": {
+                    "type": "number"
+                },
+                "distance": {
+                    "type": "number"
+                },
+                "startTime": {
+                    "type": "number"
+                },
+                "endTime": {
+                    "type": "number"
+                },
+                "averageSpeed": {
+                    "type": "number"
+                },
+                "topSpeed": {
+                    "type": "number"
+                },
+                "dayDrive": {
+                    "type": "number"
+                },
+                "nightDrive": {
+                    "type": "number"
+                },
+                "isBusinessTrip": {
+                    "type": "boolean"
+                },
+                "isFavouriteTrip": {
+                    "type": "boolean"
+                },
+                "startLocation": {
+                    "$ref": "#/definitions/RequiredLocation"
+                },
+                "endLocation": {
+                    "$ref": "#/definitions/RequiredLocation"
+                },
+                "evModePercentage": {
+                    "type": "number"
+                },
+                "driveStyles": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/DriveStyle"
+                    }
+                },
+                "numHardBraking": {
+                    "type": "number"
+                },
+                "numHardAcceleration": {
+                    "type": "number"
+                },
+                "numHardCornering": {
+                    "type": "number"
+                },
+                "numBoundary": {
+                    "type": "number"
+                },
+                "isBoundaryOn": {
+                    "type": "boolean"
+                },
+                "cost": {
+                    "type": "number"
+                },
+                "idleTime": {
+                    "type": "number"
+                },
+                "encodedMapData": {
+                    "type": "string"
+                },
+                "fuelEfficiency": {
+                    "type": "number"
+                },
+                "fullLocation": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/RequiredLocation"
+                    }
+                },
+                "ecoData": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/EcoData"
+                    }
+                },
+                "evMode": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/EvMode"
+                    }
+                },
+                "hardBraking": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/LocationHardEvent"
+                    }
+                },
+                "hardAcceleration": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/LocationHardEvent"
+                    }
+                },
+                "hardCornering": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/LocationHardEvent"
+                    }
+                },
+                "boundary": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/Location"
+                    }
+                },
+                "profiles": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/Profile"
+                    }
+                },
+                "currency": {
+                    "type": "string"
+                },
+                "totalFuelConsumption": {
+                    "type": "number"
+                },
+                "energyEfficiency": {
+                    "type": "number"
+                },
+                "totalEnergyConsumption": {
+                    "type": "number"
+                },
+                "valetViolation": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/Location"
+                    }
+                },
+                "speedViolation": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/Location"
+                    }
+                },
+                "curfewViolation": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/Location"
+                    }
+                },
+                "evModeMap": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "EnrichedTripReportData": {
+            "type": "object",
+            "required": [
+                "tripId",
+                "duration",
+                "distance",
+                "startTime",
+                "endTime",
+                "averageSpeed",
+                "topSpeed",
+                "dayDrive",
+                "nightDrive",
+                "isBusinessTrip",
+                "isFavouriteTrip",
+                "startLocation",
+                "endLocation",
+                "driveStyles",
+                "cost",
+                "encodedMapData",
+                "fullLocation",
+                "ecoData",
+                "profiles"
+            ],
+            "properties": {
+                "tripId": {
+                    "type": "string"
+                },
+                "travelDate": {
+                    "type": "number"
+                },
+                "duration": {
+                    "type": "number"
+                },
+                "distance": {
+                    "type": "number"
+                },
+                "startTime": {
+                    "type": "number"
+                },
+                "endTime": {
+                    "type": "number"
+                },
+                "averageSpeed": {
+                    "type": "number"
+                },
+                "topSpeed": {
+                    "type": "number"
+                },
+                "dayDrive": {
+                    "type": "number"
+                },
+                "nightDrive": {
+                    "type": "number"
+                },
+                "isBusinessTrip": {
+                    "type": "boolean"
+                },
+                "isFavouriteTrip": {
+                    "type": "boolean"
+                },
+                "startLocation": {
+                    "$ref": "#/definitions/ExtendedLocation"
+                },
+                "endLocation": {
+                    "$ref": "#/definitions/ExtendedLocation"
+                },
+                "evModePercentage": {
+                    "type": "number"
+                },
+                "driveStyles": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/DriveStyle"
+                    }
+                },
+                "numHardBraking": {
+                    "type": "number"
+                },
+                "numHardAcceleration": {
+                    "type": "number"
+                },
+                "numHardCornering": {
+                    "type": "number"
+                },
+                "numBoundary": {
+                    "type": "number"
+                },
+                "isBoundaryOn": {
+                    "type": "boolean"
+                },
+                "cost": {
+                    "type": "number"
+                },
+                "idleTime": {
+                    "type": "number"
+                },
+                "encodedMapData": {
+                    "type": "string"
+                },
+                "fuelEfficiency": {
+                    "type": "number"
+                },
+                "fullLocation": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/RequiredLocation"
+                    }
+                },
+                "ecoData": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/EcoData"
+                    }
+                },
+                "evMode": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/EvMode"
+                    }
+                },
+                "hardBraking": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/LocationHardEvent"
+                    }
+                },
+                "hardAcceleration": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/LocationHardEvent"
+                    }
+                },
+                "hardCornering": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/LocationHardEvent"
+                    }
+                },
+                "boundary": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/Location"
+                    }
+                },
+                "profiles": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/Profile"
+                    }
+                },
+                "currency": {
+                    "type": "string"
+                },
+                "totalFuelConsumption": {
+                    "type": "number"
+                },
+                "energyEfficiency": {
+                    "type": "number"
+                },
+                "totalEnergyConsumption": {
+                    "type": "number"
+                },
+                "valetViolation": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/Location"
+                    }
+                },
+                "speedViolation": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/Location"
+                    }
+                },
+                "curfewViolation": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/Location"
+                    }
+                },
+                "evModeMap": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "TripReportDataItem": {
+            "description": "Schema for TripReport Data Iteme",
+            "type": "object",
+            "properties": {
+                "userVin": {
+                    "type": "string"
+                },
+                "EventID": {
+                    "type": "string"
+                },
+                "Version": {
+                    "type": "string"
+                },
+                "Timestamp": {
+                    "type": "number"
+                },
+                "Data": {
+                    "$ref": "#/definitions/EnrichedTripReportData"
+                }
+            },
+            "required": [
+                "userVin",
+                "EventID",
+                "Version",
+                "Timestamp",
+                "Data"
+            ]
+        },
+        "GetAllTripsResponse": {
+            "description": "schema for get All Trips Details Between Durations Url",
+            "type": "object",
+            "required": [
+                "numRecords",
+                "trips"
+            ],
+            "properties": {
+                "numRecords": {
+                    "type": "number"
+                },
+                "trips": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/TripReportData"
+                    }
+                }
+            }
+        },
+        "TripDetailsResponse": {
+            "description": "schema for get Trip Details given tripid",
+            "type": "object",
+            "required": [
+                "detailType",
+                "trips"
+            ],
+            "properties": {
+                "detailType": {
+                    "type": "string"
+                },
+                "trips": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/EnrichedTripReportData"
+                    }
+                }
+            }
+        },
+        "TripReportSummaryCustomResponse": {
+            "type": "object",
+            "properties": {
+                "totalTrips": {
+                    "type": "integer"
+                },
+                "totalDuration": {
+                    "type": "number"
+                },
+                "totalDistance": {
+                    "type": "number"
+                },
+                "totalTripCost": {
+                    "type": "object",
+                    "properties": {
+                        "USD": {
+                            "type":"number"
+                        }, 
+                        "CAD": {
+                            "type":"number"
+                        },
+                        "EURO": {
+                            "type":"number"
+                        },
+                        "CNY": {
+                            "type":"number"
+                        },
+                        "GBP": {
+                            "type":"number"
+                        },
+                        "BRL": {
+                            "type":"number"
+                        }
+                    }
+                },
+                "averageSpeed": {
+                    "type": "number"
+                },
+                "totalTriggerEvents": {
+                    "type": "number"
+                },
+                "averageFuelConsumptionRate": {
+                    "type": "number"
+                },
+                "averageEnergyConsumptionRate": {
+                    "type": "number"
+                }
+            }
+        },
+        "TripReportSummaryDailyResponse": {
+            "type": "object",
+            "properties": {
+                "numRecords": {
+                    "type": "integer"
+                },
+                "days": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/TripReportSummaryDailyResponseDay"
+                    }
+                }
+            }
+        },
+        "TripReportSummaryDailyResponseDay": {
+            "type": "object",
+            "properties": {
+                "trips": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/TripReportSummaryDailyResponseTrip"
+                    }
+                },
+                "startTime": {
+                    "type": "number"
+                },
+                "endTime": {
+                    "type": "number"
+                },
+                "duration": {
+                    "type": "number"
+                },
+                "distance": {
+                    "type": "number"
+                },
+                "fuelConsumptionRate": {
+                    "type": "number"
+                },
+                "energyConsumptionRate": {
+                    "type": "number"
+                },
+                "tripsCost": {
+                    "type": "object",
+                    "properties": {
+                        "USD": {
+                            "type":"number"
+                        }, 
+                        "CAD": {
+                            "type":"number"
+                        },
+                        "EURO": {
+                            "type":"number"
+                        },
+                        "CNY": {
+                            "type":"number"
+                        },
+                        "GBP": {
+                            "type":"number"
+                        },
+                        "BRL": {
+                            "type":"number"
+                        }
+                    }
+                },
+                "averageSpeed": {
+                    "type": "number"
+                },
+                "numTriggers": {
+                    "type": "number"
+                },
+                "numTrips": {
+                    "type": "number"
+                },
+                "totalFuelConsumption": {
+                    "type": "number"
+                },
+                "totalEnergyConsumption": {
+                    "type": "number"
+                },
+                "ecoScore": {
+                    "$ref": "#/definitions/TripReportSummaryEcoScore"
+                }
+            }
+        },
+        "TripReportSummaryDailyResponseTrip": {
+            "type": "object",
+            "properties": {
+                "cost": {
+                    "type": "number"
+                },
+                "distance": {
+                    "type": "number"
+                },
+                "isBusinessTrip": {
+                    "type": "boolean"
+                },
+                "isFavouriteTrip": {
+                    "type": "boolean"
+                },
+                "currency": {
+                    "type": "string"
+                },
+                "tripId": {
+                    "type": "string"
+                },
+                "travelDate": {
+                    "type": "number"
+                },
+                "startTime": {
+                    "type": "number"
+                },
+                "endTime": {
+                    "type": "number"
+                }
+            }
+        },
+        "TripReportSummaryEcoScore": {
+            "type": "object",
+            "properties": {
+                "profileName": {
+                    "type": "string"
+                },
+                "averageScore": {
+                    "type": "number"
+                }
+            }
+        },
+        "TripReportSummaryWeeklyResponse": {
+            "type": "object",
+            "properties": {
+                "numRecords": {
+                    "type": "integer"
+                },
+                "weeks": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/TripReportSummaryWeeklyResponseWeek"
+                    }
+                }
+            }
+        },
+        "TripReportSummaryWeeklyResponseWeek": {
+            "type": "object",
+            "properties": {
+                "trips": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/TripReportSummaryWeeklyResponseTrip"
+                    }
+                },
+                "startTime": {
+                    "type": "number"
+                },
+                "endTime": {
+                    "type": "number"
+                },
+                "duration": {
+                    "type": "number"
+                },
+                "distance": {
+                    "type": "number"
+                },
+                "fuelConsumptionRate": {
+                    "type": "number"
+                },
+                "energyConsumptionRate": {
+                    "type": "number"
+                },
+                "tripsCost": {
+                    "type": "object",
+                    "properties": {
+                        "USD": {
+                            "type":"number"
+                        }, 
+                        "CAD": {
+                            "type":"number"
+                        },
+                        "EURO": {
+                            "type":"number"
+                        },
+                        "CNY": {
+                            "type":"number"
+                        },
+                        "GBP": {
+                            "type":"number"
+                        },
+                        "BRL": {
+                            "type":"number"
+                        }
+                    }
+                },
+                "averageSpeed": {
+                    "type": "number"
+                },
+                "numTriggers": {
+                    "type": "number"
+                },
+                "numTrips": {
+                    "type": "number"
+                },
+                "totalFuelConsumption": {
+                    "type": "number"
+                },
+                "totalEnergyConsumption": {
+                    "type": "number"
+                },
+                "ecoScore": {
+                    "$ref": "#/definitions/TripReportSummaryEcoScore"
+                }
+            }
+        },
+        "TripReportSummaryWeeklyResponseTrip": {
+            "type": "object",
+            "properties": {
+                "tripId": {
+                    "type": "string"
+                },
+                "travelDate": {
+                    "type": "number"
+                },
+                "startTime": {
+                    "type": "number"
+                },
+                "endTime": {
+                    "type": "number"
+                }
+            }
+        },
+        "TripReportSummaryMonthlyResponse": {
+            "type": "object",
+            "properties": {
+                "numRecords": {
+                    "type": "integer"
+                },
+                "months": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/TripReportSummaryMonthlyResponseMonth"
+                    }
+                }
+            }
+        },
+        "TripReportSummaryMonthlyResponseMonth": {
+            "type": "object",
+            "properties": {
+                "trips": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/TripReportSummaryMonthlyResponseTrip"
+                    }
+                },
+                "startTime": {
+                    "type": "number"
+                },
+                "endTime": {
+                    "type": "number"
+                },
+                "duration": {
+                    "type": "number"
+                },
+                "distance": {
+                    "type": "number"
+                },
+                "fuelConsumptionRate": {
+                    "type": "number"
+                },
+                "energyConsumptionRate": {
+                    "type": "number"
+                },
+                "tripsCost": {
+                    "type": "object",
+                    "properties": {
+                        "USD": {
+                            "type":"number"
+                        }, 
+                        "CAD": {
+                            "type":"number"
+                        },
+                        "EURO": {
+                            "type":"number"
+                        },
+                        "CNY": {
+                            "type":"number"
+                        },
+                        "GBP": {
+                            "type":"number"
+                        },
+                        "BRL": {
+                            "type":"number"
+                        }
+                    }
+                },
+                "averageSpeed": {
+                    "type": "number"
+                },
+                "numTriggers": {
+                    "type": "number"
+                },
+                "numTrips": {
+                    "type": "number"
+                },
+                "totalFuelConsumption": {
+                    "type": "number"
+                },
+                "totalEnergyConsumption": {
+                    "type": "number"
+                },
+                "ecoScore": {
+                    "$ref": "#/definitions/TripReportSummaryEcoScore"
+                }
+            }
+        },
+        "TripReportSummaryMonthlyResponseTrip": {
+            "type": "object",
+            "properties": {
+                "tripId": {
+                    "type": "string"
+                }
+            }
+        },
+        "Router400ErrorResponse": {
+            "type": "object",
+            "required": [
+                "message"
+            ],
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "enum": [
+                        "Bad Request"
+                    ]
+                },
+                "message": {
+                    "type": "string",
+                    "description": "Missing/Invalid Parameter in Request"
+                }
+            }
+        },
+        "Router401ErrorResponse": {
+            "type": "object",
+            "required": [
+                "message"
+            ],
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "enum": [
+                        "Unauthorized"
+                    ]
+                },
+                "message": {
+                    "type": "string",
+                    "description": "Error message the possible values can be - User not authorized"
+                }
+            }
+        },
+        "Router403ErrorResponse": {
+            "type": "object",
+            "required": [
+                "message"
+            ],
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "enum": [
+                        "Not Found"
+                    ]
+                },
+                "message": {
+                    "type": "string",
+                    "description": "description of the error response"
+                }
+            }
+        },
+        "Router404ErrorResponse": {
+            "type": "object",
+            "required": [
+                "message"
+            ],
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "enum": [
+                        "System Exception"
+                    ]
+                },
+                "message": {
+                    "type": "string",
+                    "description": "description of the error response, values can be - Resource Not Found"
+                }
+            }
+        },
+        "Router500ErrorResponse": {
+            "type": "object",
+            "required": [
+                "message"
+            ],
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "enum": [
+                        "Bad Gateway"
+                    ]
+                },
+                "message": {
+                    "type": "string",
+                    "description": "description of the error response, values can be - Internal Server Error"
+                }
+            }
+        },
+        "Router502ErrorResponse": {
+            "type": "object",
+            "required": [
+                "message"
+            ],
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "enum": [
+                        "Bad Gateway"
+                    ]
+                },
+                "message": {
+                    "type": "string",
+                    "description": "Description of the error message - possible values can be Proxy Integration Failed"
+                }
+            }
+        }
+    },
+    "paths": {
+        "/v2/accounts/{userid}/vehicles/{vin}/tripreport/settings": {
+            "post": {
+                "tags": [
+                    "Trip Report"
+                ],
+                "summary": "FCL_S116_SC002 | Update default trip report settings configuration",
+                "description": "This API is used to configure the default trip report settings from the user channel (mobile app)",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "userid",
+                        "description": "unique identifier of user - Gigya id for user",
+                        "in": "path",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "vin",
+                        "description": "Vehicle Identifier",
+                        "in": "path",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "x-clientapp-name",
+                        "description": "Name of the Client application",
+                        "in": "header",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "name": "x-clientapp-version",
+                        "description": "Version of the client applications software",
+                        "in": "header",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "content-type",
+                        "description": "application/json ",
+                        "in": "header",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "x-api-key",
+                        "description": "API key for the Service ",
+                        "in": "header",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "clientrequestid",
+                        "description": "To be generated by Client (Last 10 digits of uid_epoch_6digit random)",
+                        "in": "header",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "Locale",
+                        "description": "Locale of user. Coded according to ISO-639 (e.g. “en”) and optionally extended by a country code (e.g. “en_US”).  ",
+                        "in": "header",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "name": "x-device-id",
+                        "description": "An identifier that uniquely identifies the client device, or calling system like IMEI code. optional for webapp",
+                        "in": "header",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "name": "x-originator-type",
+                        "description": "The originating clients type: app, web ,server",
+                        "in": "header",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "Authorization",
+                        "description": "Cognito token",
+                        "in": "header",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "DefaultTripReportSettingsRequest",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/DefaultTripReportSettingsRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "200 response"
+                    },
+                    "400": {
+                        "description": "400 response",
+                        "schema": {
+                            "$ref": "#/definitions/Router400ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "401 response",
+                        "schema": {
+                            "$ref": "#/definitions/Router401ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "403 response",
+                        "schema": {
+                            "$ref": "#/definitions/Router403ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "404 response",
+                        "schema": {
+                            "$ref": "#/definitions/Router404ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "500 response",
+                        "schema": {
+                            "$ref": "#/definitions/Router500ErrorResponse"
+                        }
+                    },
+                    "502": {
+                        "description": "502 response",
+                        "schema": {
+                            "$ref": "#/definitions/Router502ErrorResponse"
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "api_key": []
+                    },
+                    {
+                        "sigv4": []
+                    }
+                ],
+                "x-amazon-apigateway-integration": {
+                    "uri": "arn:aws:apigateway:${DEPLOY_REGION}:lambda:path/2015-03-31/functions/arn:aws:lambda:${DEPLOY_REGION}:${FCL_ACCOUNT_ID}:function:FCL_${FEATURE_CODE}_${ENVIRONMENT}_${DEPLOY_REGION}_SC002-trip-report-settings:gsdp/invocations",
+                    "responses": {
+                        "default": {
+                            "statusCode": "200"
+                        }
+                    },
+                    "passthroughBehavior": "when_no_match",
+                    "httpMethod": "POST",
+                    "contentHandling": "CONVERT_TO_TEXT",
+                    "type": "aws_proxy"
+                }
+            },
+            "get": {
+                "tags": [
+                    "Trip Report"
+                ],
+                "summary": "FCL_S116_SC002 | Get default trip report settings configuration",
+                "description": "This API is used to get the default trip report settings from the user channel (mobile app)",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "userid",
+                        "description": "unique identifier of user - Gigya id for user",
+                        "in": "path",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "vin",
+                        "description": "Vehicle Identifier",
+                        "in": "path",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "x-clientapp-name",
+                        "description": "Name of the Client application",
+                        "in": "header",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "name": "x-clientapp-version",
+                        "description": "Version of the client applications software",
+                        "in": "header",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "content-type",
+                        "description": "application/json ",
+                        "in": "header",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "x-api-key",
+                        "description": "API key for the Service ",
+                        "in": "header",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "clientrequestid",
+                        "description": "To be generated by Client (Last 10 digits of uid_epoch_6digit random)",
+                        "in": "header",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "Locale",
+                        "description": "Locale of user. Coded according to ISO-639 (e.g. “en”) and optionally extended by a country code (e.g. “en_US”).  ",
+                        "in": "header",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "name": "x-device-id",
+                        "description": "An identifier that uniquely identifies the client device, or calling system like IMEI code. optional for webapp",
+                        "in": "header",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "name": "x-originator-type",
+                        "description": "The originating clients type: app, web ,server",
+                        "in": "header",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "Authorization",
+                        "description": "Cognito token",
+                        "in": "header",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "200 response",
+                        "schema": {
+                            "$ref": "#/definitions/DefaultTripReportSettingsResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "400 response",
+                        "schema": {
+                            "$ref": "#/definitions/Router400ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "401 response",
+                        "schema": {
+                            "$ref": "#/definitions/Router401ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "403 response",
+                        "schema": {
+                            "$ref": "#/definitions/Router403ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "404 response",
+                        "schema": {
+                            "$ref": "#/definitions/Router404ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "500 response",
+                        "schema": {
+                            "$ref": "#/definitions/Router500ErrorResponse"
+                        }
+                    },
+                    "502": {
+                        "description": "502 response",
+                        "schema": {
+                            "$ref": "#/definitions/Router502ErrorResponse"
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "api_key": []
+                    },
+                    {
+                        "sigv4": []
+                    }
+                ],
+                "x-amazon-apigateway-integration": {
+                    "uri": "arn:aws:apigateway:${DEPLOY_REGION}:lambda:path/2015-03-31/functions/arn:aws:lambda:${DEPLOY_REGION}:${FCL_ACCOUNT_ID}:function:FCL_${FEATURE_CODE}_${ENVIRONMENT}_${DEPLOY_REGION}_SC002-trip-report-settings:gsdp/invocations",
+                    "responses": {
+                        "default": {
+                            "statusCode": "200"
+                        }
+                    },
+                    "passthroughBehavior": "when_no_match",
+                    "httpMethod": "POST",
+                    "contentHandling": "CONVERT_TO_TEXT",
+                    "type": "aws_proxy"
+                }
+            }
+        },
+        "/v2/accounts/{userid}/vehicles/{vin}/tripreport/settings/{tripid}": {
+            "post": {
+                "tags": [
+                    "Trip Report"
+                ],
+                "summary": "FCL_S116_SC002 | Update trip report settings configuration",
+                "description": "This API is used to update the trip report settings from the user channel (mobile app)",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "userid",
+                        "description": "unique identifier of user - Gigya id for user",
+                        "in": "path",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "vin",
+                        "description": "Vehicle Identifier",
+                        "in": "path",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "tripid",
+                        "description": "Trip Report Identifier",
+                        "in": "path",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "x-clientapp-name",
+                        "description": "Name of the Client application",
+                        "in": "header",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "name": "x-clientapp-version",
+                        "description": "Version of the client applications software",
+                        "in": "header",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "content-type",
+                        "description": "application/json ",
+                        "in": "header",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "x-api-key",
+                        "description": "API key for the Service ",
+                        "in": "header",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "clientrequestid",
+                        "description": "To be generated by Client (Last 10 digits of uid_epoch_6digit random)",
+                        "in": "header",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "Locale",
+                        "description": "Locale of user. Coded according to ISO-639 (e.g. “en”) and optionally extended by a country code (e.g. “en_US”).  ",
+                        "in": "header",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "name": "x-device-id",
+                        "description": "An identifier that uniquely identifies the client device, or calling system like IMEI code. optional for webapp",
+                        "in": "header",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "name": "x-originator-type",
+                        "description": "The originating clients type: app, web ,server",
+                        "in": "header",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "Authorization",
+                        "description": "Cognito token",
+                        "in": "header",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "TripReportSettingsRequest",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/TripReportSettingsRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "200 response"
+                    },
+                    "400": {
+                        "description": "400 response",
+                        "schema": {
+                            "$ref": "#/definitions/Router400ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "401 response",
+                        "schema": {
+                            "$ref": "#/definitions/Router401ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "403 response",
+                        "schema": {
+                            "$ref": "#/definitions/Router403ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "404 response",
+                        "schema": {
+                            "$ref": "#/definitions/Router404ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "500 response",
+                        "schema": {
+                            "$ref": "#/definitions/Router500ErrorResponse"
+                        }
+                    },
+                    "502": {
+                        "description": "502 response",
+                        "schema": {
+                            "$ref": "#/definitions/Router502ErrorResponse"
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "api_key": []
+                    },
+                    {
+                        "sigv4": []
+                    }
+                ],
+                "x-amazon-apigateway-integration": {
+                    "uri": "arn:aws:apigateway:${DEPLOY_REGION}:lambda:path/2015-03-31/functions/arn:aws:lambda:${DEPLOY_REGION}:${FCL_ACCOUNT_ID}:function:FCL_${FEATURE_CODE}_${ENVIRONMENT}_${DEPLOY_REGION}_SC002-trip-report-settings:gsdp/invocations",
+                    "responses": {
+                        "default": {
+                            "statusCode": "200"
+                        }
+                    },
+                    "passthroughBehavior": "when_no_match",
+                    "httpMethod": "POST",
+                    "contentHandling": "CONVERT_TO_TEXT",
+                    "type": "aws_proxy"
+                }
+            },
+            "get": {
+                "tags": [
+                    "Trip Report"
+                ],
+                "summary": "FCL_S116_SC002 | Get trip report settings configuration",
+                "description": "This API is used to get the trip report settings from the user channel (mobile app)",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "userid",
+                        "description": "unique identifier of user - Gigya id for user",
+                        "in": "path",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "vin",
+                        "description": "Vehicle Identifier",
+                        "in": "path",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "tripid",
+                        "description": "Trip Report Identifier",
+                        "in": "path",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "x-clientapp-name",
+                        "description": "Name of the Client application",
+                        "in": "header",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "name": "x-clientapp-version",
+                        "description": "Version of the client applications software",
+                        "in": "header",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "content-type",
+                        "description": "application/json ",
+                        "in": "header",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "x-api-key",
+                        "description": "API key for the Service ",
+                        "in": "header",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "clientrequestid",
+                        "description": "To be generated by Client (Last 10 digits of uid_epoch_6digit random)",
+                        "in": "header",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "Locale",
+                        "description": "Locale of user. Coded according to ISO-639 (e.g. “en”) and optionally extended by a country code (e.g. “en_US”).  ",
+                        "in": "header",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "name": "x-device-id",
+                        "description": "An identifier that uniquely identifies the client device, or calling system like IMEI code. optional for webapp",
+                        "in": "header",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "name": "x-originator-type",
+                        "description": "The originating clients type: app, web ,server",
+                        "in": "header",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "Authorization",
+                        "description": "Cognito token",
+                        "in": "header",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "200 response",
+                        "schema": {
+                            "$ref": "#/definitions/TripReportSettingsResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "400 response",
+                        "schema": {
+                            "$ref": "#/definitions/Router400ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "401 response",
+                        "schema": {
+                            "$ref": "#/definitions/Router401ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "403 response",
+                        "schema": {
+                            "$ref": "#/definitions/Router403ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "404 response",
+                        "schema": {
+                            "$ref": "#/definitions/Router404ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "500 response",
+                        "schema": {
+                            "$ref": "#/definitions/Router500ErrorResponse"
+                        }
+                    },
+                    "502": {
+                        "description": "502 response",
+                        "schema": {
+                            "$ref": "#/definitions/Router502ErrorResponse"
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "api_key": []
+                    },
+                    {
+                        "sigv4": []
+                    }
+                ],
+                "x-amazon-apigateway-integration": {
+                    "uri": "arn:aws:apigateway:${DEPLOY_REGION}:lambda:path/2015-03-31/functions/arn:aws:lambda:${DEPLOY_REGION}:${FCL_ACCOUNT_ID}:function:FCL_${FEATURE_CODE}_${ENVIRONMENT}_${DEPLOY_REGION}_SC002-trip-report-settings:gsdp/invocations",
+                    "responses": {
+                        "default": {
+                            "statusCode": "200"
+                        }
+                    },
+                    "passthroughBehavior": "when_no_match",
+                    "httpMethod": "POST",
+                    "contentHandling": "CONVERT_TO_TEXT",
+                    "type": "aws_proxy"
+                }
+            }
+        },
+        "/v2/accounts/{userid}/vehicles/{vin}/tripreport/trips/last": {
+            "get": {
+                "tags": [
+                    "Trip Report"
+                ],
+                "summary": "FCL_S116_SC003 | Get last trip report",
+                "description": "This API is used to get the last trip report from the user channel (mobile app)",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "userid",
+                        "description": "unique identifier of user - Gigya id for user",
+                        "in": "path",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "vin",
+                        "description": "Vehicle Identifier",
+                        "in": "path",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "deny-empty-response",
+                        "description": "Optional parameter, if it is true then NOT_FOUND response is allowed",
+                        "in": "query",
+                        "type": "boolean",
+                        "enum": [
+                            true,
+                            false
+                        ]
+                    },
+                    {
+                        "name": "x-clientapp-name",
+                        "description": "Name of the Client application",
+                        "in": "header",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "name": "x-clientapp-version",
+                        "description": "Version of the client applications software",
+                        "in": "header",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "content-type",
+                        "description": "application/json ",
+                        "in": "header",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "x-api-key",
+                        "description": "API key for the Service ",
+                        "in": "header",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "clientrequestid",
+                        "description": "To be generated by Client (Last 10 digits of uid_epoch_6digit random)",
+                        "in": "header",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "Locale",
+                        "description": "Locale of user. Coded according to ISO-639 (e.g. “en”) and optionally extended by a country code (e.g. “en_US”).  ",
+                        "in": "header",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "name": "x-device-id",
+                        "description": "An identifier that uniquely identifies the client device, or calling system like IMEI code. optional for webapp",
+                        "in": "header",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "name": "x-originator-type",
+                        "description": "The originating clients type: app, web ,server",
+                        "in": "header",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "Authorization",
+                        "description": "Cognito token",
+                        "in": "header",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "200 response",
+                        "schema": {
+                            "$ref": "#/definitions/TripReportDataItem"
+                        }
+                    },
+                    "400": {
+                        "description": "400 response",
+                        "schema": {
+                            "$ref": "#/definitions/Router400ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "401 response",
+                        "schema": {
+                            "$ref": "#/definitions/Router401ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "403 response",
+                        "schema": {
+                            "$ref": "#/definitions/Router403ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "404 response",
+                        "schema": {
+                            "$ref": "#/definitions/Router404ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "500 response",
+                        "schema": {
+                            "$ref": "#/definitions/Router500ErrorResponse"
+                        }
+                    },
+                    "502": {
+                        "description": "502 response",
+                        "schema": {
+                            "$ref": "#/definitions/Router502ErrorResponse"
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "api_key": []
+                    },
+                    {
+                        "sigv4": []
+                    }
+                ],
+                "x-amazon-apigateway-integration": {
+                    "uri": "arn:aws:apigateway:${DEPLOY_REGION}:lambda:path/2015-03-31/functions/arn:aws:lambda:${DEPLOY_REGION}:${FCL_ACCOUNT_ID}:function:FCL_${FEATURE_CODE}_${ENVIRONMENT}_${DEPLOY_REGION}_SC003-trip-report-details:gsdp/invocations",
+                    "responses": {
+                        "default": {
+                            "statusCode": "200"
+                        }
+                    },
+                    "passthroughBehavior": "when_no_match",
+                    "httpMethod": "POST",
+                    "contentHandling": "CONVERT_TO_TEXT",
+                    "type": "aws_proxy"
+                }
+            }
+        },
+        "/v2/accounts/{userid}/vehicles/{vin}/tripreport/trips": {
+            "get": {
+                "tags": [
+                    "Trip Report"
+                ],
+                "summary": "FCL_S116_SC003 | Get details of trips betweeen the duration",
+                "description": "This API is used to get the details of all the trip in the time interval",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "userid",
+                        "description": "unique identifier of user - Gigya id for user",
+                        "in": "path",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "vin",
+                        "description": "Vehicle Identifier",
+                        "in": "path",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "x-clientapp-name",
+                        "description": "Name of the Client application",
+                        "in": "header",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "name": "x-clientapp-version",
+                        "description": "Version of the client applications software",
+                        "in": "header",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "content-type",
+                        "description": "application/json ",
+                        "in": "header",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "x-api-key",
+                        "description": "API key for the Service ",
+                        "in": "header",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "clientrequestid",
+                        "description": "To be generated by Client (Last 10 digits of uid_epoch_6digit random)",
+                        "in": "header",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "Locale",
+                        "description": "Locale of user. Coded according to ISO-639 (e.g. “en”) and optionally extended by a country code (e.g. “en_US”).  ",
+                        "in": "header",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "name": "x-device-id",
+                        "description": "An identifier that uniquely identifies the client device, or calling system like IMEI code. optional for webapp",
+                        "in": "header",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "name": "x-originator-type",
+                        "description": "The originating clients type: app, web ,server",
+                        "in": "header",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "Authorization",
+                        "description": "Cognito token",
+                        "in": "header",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "startTime",
+                        "description": "start time of the interval",
+                        "in": "query",
+                        "required": true,
+                        "type": "number"
+                    },
+                    {
+                        "name": "endTime",
+                        "description": "end time of the interval",
+                        "in": "query",
+                        "required": true,
+                        "type": "number"
+                    },
+                    {
+                        "name": "offset",
+                        "in": "query",
+                        "required": true,
+                        "type": "number"
+                    },
+                    {
+                        "name": "size",
+                        "in": "query",
+                        "required": true,
+                        "type": "number"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "200 response",
+                        "schema": {
+                            "$ref": "#/definitions/GetAllTripsResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "400 response",
+                        "schema": {
+                            "$ref": "#/definitions/Router400ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "401 response",
+                        "schema": {
+                            "$ref": "#/definitions/Router401ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "403 response",
+                        "schema": {
+                            "$ref": "#/definitions/Router403ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "404 response",
+                        "schema": {
+                            "$ref": "#/definitions/Router404ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "500 response",
+                        "schema": {
+                            "$ref": "#/definitions/Router500ErrorResponse"
+                        }
+                    },
+                    "502": {
+                        "description": "502 response",
+                        "schema": {
+                            "$ref": "#/definitions/Router502ErrorResponse"
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "api_key": []
+                    },
+                    {
+                        "sigv4": []
+                    }
+                ],
+                "x-amazon-apigateway-integration": {
+                    "uri": "arn:aws:apigateway:${DEPLOY_REGION}:lambda:path/2015-03-31/functions/arn:aws:lambda:${DEPLOY_REGION}:${FCL_ACCOUNT_ID}:function:FCL_${FEATURE_CODE}_${ENVIRONMENT}_${DEPLOY_REGION}_SC003-trip-report-details:gsdp/invocations",
+                    "responses": {
+                        "default": {
+                            "statusCode": "200"
+                        }
+                    },
+                    "passthroughBehavior": "when_no_match",
+                    "httpMethod": "POST",
+                    "contentHandling": "CONVERT_TO_TEXT",
+                    "type": "aws_proxy"
+                }
+            }
+        },
+        "/v2/accounts/{userid}/vehicles/{vin}/tripreport/trips/{tripid}": {
+            "get": {
+                "tags": [
+                    "Trip Report"
+                ],
+                "summary": "FCL_S116_SC003 | Get details of trips betweeen the duration",
+                "description": "This API is used to get the details of all the trip in the time interval",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "userid",
+                        "description": "unique identifier of user - Gigya id for user",
+                        "in": "path",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "vin",
+                        "description": "Vehicle Identifier",
+                        "in": "path",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "tripid",
+                        "description": "Trip Identifier",
+                        "in": "path",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "x-clientapp-name",
+                        "description": "Name of the Client application",
+                        "in": "header",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "name": "x-clientapp-version",
+                        "description": "Version of the client applications software",
+                        "in": "header",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "content-type",
+                        "description": "application/json ",
+                        "in": "header",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "x-api-key",
+                        "description": "API key for the Service ",
+                        "in": "header",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "clientrequestid",
+                        "description": "To be generated by Client (Last 10 digits of uid_epoch_6digit random)",
+                        "in": "header",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "Locale",
+                        "description": "Locale of user. Coded according to ISO-639 (e.g. “en”) and optionally extended by a country code (e.g. “en_US”).  ",
+                        "in": "header",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "name": "x-device-id",
+                        "description": "An identifier that uniquely identifies the client device, or calling system like IMEI code. optional for webapp",
+                        "in": "header",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "name": "x-originator-type",
+                        "description": "The originating clients type: app, web ,server",
+                        "in": "header",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "Authorization",
+                        "description": "Cognito token",
+                        "in": "header",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "200 response",
+                        "schema": {
+                            "$ref": "#/definitions/TripDetailsResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "400 response",
+                        "schema": {
+                            "$ref": "#/definitions/Router400ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "401 response",
+                        "schema": {
+                            "$ref": "#/definitions/Router401ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "403 response",
+                        "schema": {
+                            "$ref": "#/definitions/Router403ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "404 response",
+                        "schema": {
+                            "$ref": "#/definitions/Router404ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "500 response",
+                        "schema": {
+                            "$ref": "#/definitions/Router500ErrorResponse"
+                        }
+                    },
+                    "502": {
+                        "description": "502 response",
+                        "schema": {
+                            "$ref": "#/definitions/Router502ErrorResponse"
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "api_key": []
+                    },
+                    {
+                        "sigv4": []
+                    }
+                ],
+                "x-amazon-apigateway-integration": {
+                    "uri": "arn:aws:apigateway:${DEPLOY_REGION}:lambda:path/2015-03-31/functions/arn:aws:lambda:${DEPLOY_REGION}:${FCL_ACCOUNT_ID}:function:FCL_${FEATURE_CODE}_${ENVIRONMENT}_${DEPLOY_REGION}_SC003-trip-report-details:gsdp/invocations",
+                    "responses": {
+                        "default": {
+                            "statusCode": "200"
+                        }
+                    },
+                    "passthroughBehavior": "when_no_match",
+                    "httpMethod": "POST",
+                    "contentHandling": "CONVERT_TO_TEXT",
+                    "type": "aws_proxy"
+                }
+            }
+        },
+        "/v2/accounts/{userid}/vehicles/{vin}/tripreport/summary/custom": {
+            "options": {
+                "responses": {},
+                "x-amazon-apigateway-integration": {
+                    "credentials": "arn:aws:iam::${SDPR_ACCOUNT_ID}:role/${CORS_LAMBDA_INVOKE_ROLE_NAME}",
+                    "uri": "arn:aws:apigateway:${DEPLOY_REGION}:lambda:path/2015-03-31/functions/arn:aws:lambda:${DEPLOY_REGION}:${SDPR_ACCOUNT_ID}:function:${CORS_LAMBDA_NAME}/invocations",
+                    "responses": {
+                        "default": {
+                            "statusCode": "200"
+                        }
+                    },
+                    "passthroughBehavior": "when_no_match",
+                    "httpMethod": "POST",
+                    "contentHandling": "CONVERT_TO_TEXT",
+                    "type": "aws_proxy"
+                }
+            },
+            "get": {
+                "tags": [
+                    "Trip Report Summary"
+                ],
+                "summary": "FCL_S116_SC004",
+                "description": "This API gives Trip summary details between given start and end time in a custom timeframe",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "userid",
+                        "description": "unique identifier of user - Gigya id for user",
+                        "in": "path",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "vin",
+                        "description": "Vehicle Identifier",
+                        "in": "path",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "x-clientapp-name",
+                        "description": "Name of the Client application",
+                        "in": "header",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "name": "x-clientapp-version",
+                        "description": "Version of the client applications software",
+                        "in": "header",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "content-type",
+                        "description": "application/json ",
+                        "in": "header",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "x-api-key",
+                        "description": "API key for the Service ",
+                        "in": "header",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "clientrequestid",
+                        "description": "To be generated by Client (Last 10 digits of uid_epoch_6digit random)",
+                        "in": "header",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "Locale",
+                        "description": "Locale of user. Coded according to ISO-639 (e.g. “en”) and optionally extended by a country code (e.g. “en_US”).  ",
+                        "in": "header",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "name": "x-device-id",
+                        "description": "An identifier that uniquely identifies the client device, or calling system like IMEI code. optional for webapp",
+                        "in": "header",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "name": "x-originator-type",
+                        "description": "The originating clients type: app, web ,server",
+                        "in": "header",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "Authorization",
+                        "description": "Cognito token",
+                        "in": "header",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "since",
+                        "description": "Unix epoch time in milliseconds",
+                        "in": "query",
+                        "required": false,
+                        "type": "number"
+                    },
+                    {
+                        "name": "till",
+                        "description": "Unix epoch time in milliseconds",
+                        "in": "query",
+                        "required": true,
+                        "type": "number"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "200 response",
+                        "schema": {
+                            "$ref": "#/definitions/TripReportSummaryCustomResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "400 response",
+                        "schema": {
+                            "$ref": "#/definitions/Router400ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "401 response",
+                        "schema": {
+                            "$ref": "#/definitions/Router401ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "403 response",
+                        "schema": {
+                            "$ref": "#/definitions/Router403ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "404 response",
+                        "schema": {
+                            "$ref": "#/definitions/Router404ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "500 response",
+                        "schema": {
+                            "$ref": "#/definitions/Router500ErrorResponse"
+                        }
+                    },
+                    "502": {
+                        "description": "502 response",
+                        "schema": {
+                            "$ref": "#/definitions/Router502ErrorResponse"
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "api_key": []
+                    },
+                    {
+                        "sigv4": []
+                    }
+                ],
+                "x-amazon-apigateway-integration": {
+                    "uri": "arn:aws:apigateway:${DEPLOY_REGION}:lambda:path/2015-03-31/functions/arn:aws:lambda:${DEPLOY_REGION}:${FCL_ACCOUNT_ID}:function:FCL_${FEATURE_CODE}_${ENVIRONMENT}_${DEPLOY_REGION}_SC004-trip-report-summary:gsdp/invocations",
+                    "responses": {
+                        "default": {
+                            "statusCode": "200"
+                        }
+                    },
+                    "passthroughBehavior": "when_no_match",
+                    "httpMethod": "POST",
+                    "contentHandling": "CONVERT_TO_TEXT",
+                    "type": "aws_proxy"
+                }
+            }
+        },
+        "/v2/accounts/{userid}/vehicles/{vin}/tripreport/summary/daily": {
+            "options": {
+                "responses": {},
+                "x-amazon-apigateway-integration": {
+                    "credentials": "arn:aws:iam::${SDPR_ACCOUNT_ID}:role/${CORS_LAMBDA_INVOKE_ROLE_NAME}",
+                    "uri": "arn:aws:apigateway:${DEPLOY_REGION}:lambda:path/2015-03-31/functions/arn:aws:lambda:${DEPLOY_REGION}:${SDPR_ACCOUNT_ID}:function:${CORS_LAMBDA_NAME}/invocations",
+                    "responses": {
+                        "default": {
+                            "statusCode": "200"
+                        }
+                    },
+                    "passthroughBehavior": "when_no_match",
+                    "httpMethod": "POST",
+                    "contentHandling": "CONVERT_TO_TEXT",
+                    "type": "aws_proxy"
+                }
+            },
+            "get": {
+                "tags": [
+                    "Trip Report Summary"
+                ],
+                "summary": "FCL_S116_SC004",
+                "description": "This API gives Day wise Trip summary details between given start and end time",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "userid",
+                        "description": "unique identifier of user - Gigya id for user",
+                        "in": "path",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "vin",
+                        "description": "Vehicle Identifier",
+                        "in": "path",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "x-clientapp-name",
+                        "description": "Name of the Client application",
+                        "in": "header",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "name": "x-clientapp-version",
+                        "description": "Version of the client applications software",
+                        "in": "header",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "content-type",
+                        "description": "application/json ",
+                        "in": "header",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "x-api-key",
+                        "description": "API key for the Service ",
+                        "in": "header",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "clientrequestid",
+                        "description": "To be generated by Client (Last 10 digits of uid_epoch_6digit random)",
+                        "in": "header",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "Locale",
+                        "description": "Locale of user. Coded according to ISO-639 (e.g. “en”) and optionally extended by a country code (e.g. “en_US”).  ",
+                        "in": "header",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "name": "x-device-id",
+                        "description": "An identifier that uniquely identifies the client device, or calling system like IMEI code. optional for webapp",
+                        "in": "header",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "name": "x-originator-type",
+                        "description": "The originating clients type: app, web ,server",
+                        "in": "header",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "Authorization",
+                        "description": "Cognito token",
+                        "in": "header",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "since",
+                        "description": "Unix epoch time in milliseconds",
+                        "in": "query",
+                        "required": false,
+                        "type": "number"
+                    },
+                    {
+                        "name": "till",
+                        "description": "Unix epoch time in milliseconds",
+                        "in": "query",
+                        "required": true,
+                        "type": "number"
+                    },
+                    {
+                        "name": "offset",
+                        "description": "offset to start index of search list (start from 0)",
+                        "in": "query",
+                        "required": true,
+                        "type": "number"
+                    },
+                    {
+                        "name": "size",
+                        "description": "size of result",
+                        "in": "query",
+                        "required": true,
+                        "type": "number"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "200 response",
+                        "schema": {
+                            "$ref": "#/definitions/TripReportSummaryDailyResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "400 response",
+                        "schema": {
+                            "$ref": "#/definitions/Router400ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "401 response",
+                        "schema": {
+                            "$ref": "#/definitions/Router401ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "403 response",
+                        "schema": {
+                            "$ref": "#/definitions/Router403ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "404 response",
+                        "schema": {
+                            "$ref": "#/definitions/Router404ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "500 response",
+                        "schema": {
+                            "$ref": "#/definitions/Router500ErrorResponse"
+                        }
+                    },
+                    "502": {
+                        "description": "502 response",
+                        "schema": {
+                            "$ref": "#/definitions/Router502ErrorResponse"
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "api_key": []
+                    },
+                    {
+                        "sigv4": []
+                    }
+                ],
+                "x-amazon-apigateway-integration": {
+                    "uri": "arn:aws:apigateway:${DEPLOY_REGION}:lambda:path/2015-03-31/functions/arn:aws:lambda:${DEPLOY_REGION}:${FCL_ACCOUNT_ID}:function:FCL_${FEATURE_CODE}_${ENVIRONMENT}_${DEPLOY_REGION}_SC004-trip-report-summary:gsdp/invocations",
+                    "responses": {
+                        "default": {
+                            "statusCode": "200"
+                        }
+                    },
+                    "passthroughBehavior": "when_no_match",
+                    "httpMethod": "POST",
+                    "contentHandling": "CONVERT_TO_TEXT",
+                    "type": "aws_proxy"
+                }
+            }
+        },
+        "/v2/accounts/{userid}/vehicles/{vin}/tripreport/summary/weekly": {
+            "options": {
+                "responses": {},
+                "x-amazon-apigateway-integration": {
+                    "credentials": "arn:aws:iam::${SDPR_ACCOUNT_ID}:role/${CORS_LAMBDA_INVOKE_ROLE_NAME}",
+                    "uri": "arn:aws:apigateway:${DEPLOY_REGION}:lambda:path/2015-03-31/functions/arn:aws:lambda:${DEPLOY_REGION}:${SDPR_ACCOUNT_ID}:function:${CORS_LAMBDA_NAME}/invocations",
+                    "responses": {
+                        "default": {
+                            "statusCode": "200"
+                        }
+                    },
+                    "passthroughBehavior": "when_no_match",
+                    "httpMethod": "POST",
+                    "contentHandling": "CONVERT_TO_TEXT",
+                    "type": "aws_proxy"
+                }
+            },
+            "get": {
+                "tags": [
+                    "Trip Report Summary"
+                ],
+                "summary": "FCL_S116_SC004",
+                "description": "This API gives weekly Trip summary details between given start and end time",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "userid",
+                        "description": "unique identifier of user - Gigya id for user",
+                        "in": "path",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "vin",
+                        "description": "Vehicle Identifier",
+                        "in": "path",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "x-clientapp-name",
+                        "description": "Name of the Client application",
+                        "in": "header",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "name": "x-clientapp-version",
+                        "description": "Version of the client applications software",
+                        "in": "header",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "content-type",
+                        "description": "application/json ",
+                        "in": "header",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "x-api-key",
+                        "description": "API key for the Service ",
+                        "in": "header",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "clientrequestid",
+                        "description": "To be generated by Client (Last 10 digits of uid_epoch_6digit random)",
+                        "in": "header",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "Locale",
+                        "description": "Locale of user. Coded according to ISO-639 (e.g. “en”) and optionally extended by a country code (e.g. “en_US”).  ",
+                        "in": "header",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "name": "x-device-id",
+                        "description": "An identifier that uniquely identifies the client device, or calling system like IMEI code. optional for webapp",
+                        "in": "header",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "name": "x-originator-type",
+                        "description": "The originating clients type: app, web ,server",
+                        "in": "header",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "Authorization",
+                        "description": "Cognito token",
+                        "in": "header",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "since",
+                        "description": "Unix epoch time in milliseconds",
+                        "in": "query",
+                        "required": false,
+                        "type": "number"
+                    },
+                    {
+                        "name": "till",
+                        "description": "Unix epoch time in milliseconds",
+                        "in": "query",
+                        "required": true,
+                        "type": "number"
+                    },
+                    {
+                        "name": "offset",
+                        "description": "offset to start index of search list (start from 0)",
+                        "in": "query",
+                        "required": true,
+                        "type": "number"
+                    },
+                    {
+                        "name": "size",
+                        "description": "size of result",
+                        "in": "query",
+                        "required": true,
+                        "type": "number"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "200 response",
+                        "schema": {
+                            "$ref": "#/definitions/TripReportSummaryWeeklyResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "400 response",
+                        "schema": {
+                            "$ref": "#/definitions/Router400ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "401 response",
+                        "schema": {
+                            "$ref": "#/definitions/Router401ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "403 response",
+                        "schema": {
+                            "$ref": "#/definitions/Router403ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "404 response",
+                        "schema": {
+                            "$ref": "#/definitions/Router404ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "500 response",
+                        "schema": {
+                            "$ref": "#/definitions/Router500ErrorResponse"
+                        }
+                    },
+                    "502": {
+                        "description": "502 response",
+                        "schema": {
+                            "$ref": "#/definitions/Router502ErrorResponse"
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "api_key": []
+                    },
+                    {
+                        "sigv4": []
+                    }
+                ],
+                "x-amazon-apigateway-integration": {
+                    "uri": "arn:aws:apigateway:${DEPLOY_REGION}:lambda:path/2015-03-31/functions/arn:aws:lambda:${DEPLOY_REGION}:${FCL_ACCOUNT_ID}:function:FCL_${FEATURE_CODE}_${ENVIRONMENT}_${DEPLOY_REGION}_SC004-trip-report-summary:gsdp/invocations",
+                    "responses": {
+                        "default": {
+                            "statusCode": "200"
+                        }
+                    },
+                    "passthroughBehavior": "when_no_match",
+                    "httpMethod": "POST",
+                    "contentHandling": "CONVERT_TO_TEXT",
+                    "type": "aws_proxy"
+                }
+            }
+        },
+        "/v2/accounts/{userid}/vehicles/{vin}/tripreport/summary/monthly": {
+            "options": {
+                "responses": {},
+                "x-amazon-apigateway-integration": {
+                    "credentials": "arn:aws:iam::${SDPR_ACCOUNT_ID}:role/${CORS_LAMBDA_INVOKE_ROLE_NAME}",
+                    "uri": "arn:aws:apigateway:${DEPLOY_REGION}:lambda:path/2015-03-31/functions/arn:aws:lambda:${DEPLOY_REGION}:${SDPR_ACCOUNT_ID}:function:${CORS_LAMBDA_NAME}/invocations",
+                    "responses": {
+                        "default": {
+                            "statusCode": "200"
+                        }
+                    },
+                    "passthroughBehavior": "when_no_match",
+                    "httpMethod": "POST",
+                    "contentHandling": "CONVERT_TO_TEXT",
+                    "type": "aws_proxy"
+                }
+            },
+            "get": {
+                "tags": [
+                    "Trip Report Summary"
+                ],
+                "summary": "FCL_S116_SC004",
+                "description": "This API gives monthly Trip summary details between given start and end time",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "userid",
+                        "description": "unique identifier of user - Gigya id for user",
+                        "in": "path",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "vin",
+                        "description": "Vehicle Identifier",
+                        "in": "path",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "x-clientapp-name",
+                        "description": "Name of the Client application",
+                        "in": "header",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "name": "x-clientapp-version",
+                        "description": "Version of the client applications software",
+                        "in": "header",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "content-type",
+                        "description": "application/json ",
+                        "in": "header",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "x-api-key",
+                        "description": "API key for the Service ",
+                        "in": "header",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "clientrequestid",
+                        "description": "To be generated by Client (Last 10 digits of uid_epoch_6digit random)",
+                        "in": "header",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "Locale",
+                        "description": "Locale of user. Coded according to ISO-639 (e.g. “en”) and optionally extended by a country code (e.g. “en_US”).  ",
+                        "in": "header",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "name": "x-device-id",
+                        "description": "An identifier that uniquely identifies the client device, or calling system like IMEI code. optional for webapp",
+                        "in": "header",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "name": "x-originator-type",
+                        "description": "The originating clients type: app, web ,server",
+                        "in": "header",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "Authorization",
+                        "description": "Cognito token",
+                        "in": "header",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "since",
+                        "description": "Unix epoch time in milliseconds",
+                        "in": "query",
+                        "required": false,
+                        "type": "number"
+                    },
+                    {
+                        "name": "till",
+                        "description": "Unix epoch time in milliseconds",
+                        "in": "query",
+                        "required": true,
+                        "type": "number"
+                    },
+                    {
+                        "name": "offset",
+                        "description": "offset to start index of search list (start from 0)",
+                        "in": "query",
+                        "required": true,
+                        "type": "number"
+                    },
+                    {
+                        "name": "size",
+                        "description": "size of result",
+                        "in": "query",
+                        "required": true,
+                        "type": "number"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "200 response",
+                        "schema": {
+                            "$ref": "#/definitions/TripReportSummaryMonthlyResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "400 response",
+                        "schema": {
+                            "$ref": "#/definitions/Router400ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "401 response",
+                        "schema": {
+                            "$ref": "#/definitions/Router401ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "403 response",
+                        "schema": {
+                            "$ref": "#/definitions/Router403ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "404 response",
+                        "schema": {
+                            "$ref": "#/definitions/Router404ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "500 response",
+                        "schema": {
+                            "$ref": "#/definitions/Router500ErrorResponse"
+                        }
+                    },
+                    "502": {
+                        "description": "502 response",
+                        "schema": {
+                            "$ref": "#/definitions/Router502ErrorResponse"
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "api_key": []
+                    },
+                    {
+                        "sigv4": []
+                    }
+                ],
+                "x-amazon-apigateway-integration": {
+                    "uri": "arn:aws:apigateway:${DEPLOY_REGION}:lambda:path/2015-03-31/functions/arn:aws:lambda:${DEPLOY_REGION}:${FCL_ACCOUNT_ID}:function:FCL_${FEATURE_CODE}_${ENVIRONMENT}_${DEPLOY_REGION}_SC004-trip-report-summary:gsdp/invocations",
+                    "responses": {
+                        "default": {
+                            "statusCode": "200"
+                        }
+                    },
+                    "passthroughBehavior": "when_no_match",
+                    "httpMethod": "POST",
+                    "contentHandling": "CONVERT_TO_TEXT",
+                    "type": "aws_proxy"
+                }
+            }
+        }
+    }
+}

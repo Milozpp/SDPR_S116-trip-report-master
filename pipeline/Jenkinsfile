@@ -1,0 +1,261 @@
+@Library('toolchain-utilities-backend')_
+import com.fca.gcv.pipeline.RegionalConfig
+
+def JenkinsConfig
+def JenkinsConfigRegional
+def region
+def RegionalConfig
+def ParametersStoreUtils
+def ParametersStore
+
+pipeline {
+    agent {
+        node {
+            label 'backend-nodejs-ecs'
+        }
+    }
+    options {
+        timeout(time: 2, unit: 'HOURS')
+    }
+    stages {
+        stage('CONFIGURE') {
+            options {
+                timeout(time: 5, unit: 'MINUTES')
+            }
+            input {
+                message 'Configure pipeline execution'
+                ok 'Continue'
+                parameters {
+                    choice(
+            name: 'WORLD_REGION',
+            choices: ['EMEA', 'NAFTA'],
+            description: 'Choose the world region where the deploy should be performed'
+          )
+                    booleanParam(
+            name: 'ASK_CONFIRMATION_FOR_DEPLOYS',
+            defaultValue: true,
+            description: 'Enable or disable deploy confirmation step'
+          )
+                    booleanParam(
+            name: 'EXECUTE_UNIT_TESTING',
+            defaultValue: true,
+            description: 'Enable or disable unit testing, this option is ignored if unit testing is mandatory (i.e. release on pre-prod or beyond)'
+          )
+                    booleanParam(
+            name: 'EXECUTE_STATIC_ANALYSIS',
+            defaultValue: true,
+            description: 'Enable or disable static analysis, this option is ignored if static analysis is mandatory (i.e. release on pre-prod or beyond)'
+          )
+                    booleanParam(
+            name: 'DEPLOY_DEV',
+            defaultValue: true,
+            description: 'Enable or disable deploy in development environment'
+          )
+                    booleanParam(
+            name: 'DEPLOY_INT',
+            defaultValue: true,
+            description: 'Enable or disable deploy in integration environment'
+          )
+                    booleanParam(
+            name: 'DEPLOY_PREP',
+            defaultValue: false,
+            description: 'Enable or disable deploy in pre-production environment, this option is ignored if pre-production is not reachable (i.e. build starting from pull request branch)'
+          )
+                    booleanParam(
+            name: 'DEPLOY_PROD',
+            defaultValue: false,
+            description: 'Enable or disable deploy in production environment, this option is ignored if production is not reachable (i.e. build starting from pull request branch)'
+          )
+                }
+            }
+            steps {
+                sh "echo 'Loading Configuration'"
+                script {
+                    print('Loading Configuration')
+                    JenkinsConfig = load './pipeline/JenkinsConfig.groovy'
+                    RegionalConfig = new RegionalConfig(env)
+                    ParametersStoreUtils = load './pipeline/ParametersStoreUtils.groovy'
+                    ParametersStore = load './pipeline/ParametersStore.groovy'
+                    ParametersStoreUtils.storePipelineParameters(ParametersStore.store)
+                    JenkinsConfig.loadGlobalEnvVariables()
+                    println('Configuration successfully loaded')
+                    region = ParametersStore.store.WORLD_REGION == 'EMEA' ? 'eu-west-1' : 'us-east-1'
+                    // print common information
+                    println('Deploying in: ' + ParametersStore.store.WORLD_REGION)
+                    println("Deploying version: ${BRANCH_NAME}")
+                }
+                sh "echo 'Configuration successfully loaded'"
+                downloadScripts()
+            }
+            post {
+                failure {
+                    sh "echo 'Configuration not loaded'"
+                }
+            }
+        }
+        stage('TEST') {
+            stages {
+                stage('unit-testing') {
+                    when {
+                        anyOf {
+                            expression { return ParametersStore.store.EXECUTE_UNIT_TESTING == 'true' }
+                            //release merge branches must be always unit tested
+                            expression { return "${BRANCH_NAME}" =~ "(release\\/v.*)" }
+                        }
+                    }
+                    steps {
+                        script {
+                            unitTests(JenkinsConfig)
+                        }
+                    }
+                }
+                stage('static-analysis') {
+                    when {
+                        anyOf {
+                            expression { return ParametersStore.store.EXECUTE_STATIC_ANALYSIS == 'true' }
+                            //release and PR merge branches must be always statically analyzed
+                            expression { return "${BRANCH_NAME}" =~ "(release\\/v.*)" }
+                        }
+                    }
+                    steps {
+                        script {
+                            staticAnalysis(JenkinsConfig)
+                        }
+                    }
+                    post {
+                        always {
+                            script {
+                                staticAnalysisPost(JenkinsConfig)
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        stage('BUILD') {
+            steps {
+                script {
+                    buildNode(JenkinsConfig)
+                }
+            }
+            post {
+                always {
+                    script {
+                        buildNodePost(JenkinsConfig)
+                    }
+                }
+            }
+        }
+        stage('PACKAGE') {
+            steps {
+                script {
+                    stage('package-' + region) {
+                        script {
+                            JenkinsConfig.loadGlobalEnvVariables()
+                            RegionalConfig.getPackageConfig(ParametersStore.store.WORLD_REGION)
+                            sh 'printenv'
+                        }
+                        sh 'sh ./scripts/package/script.sh'
+                    }
+                }
+            }
+        }
+        stage('DEPLOY') {
+            steps {
+                script {
+                    ['DEV', 'INT', 'PREP', 'PROD'].each { environment ->
+                        if (isStageToBeSkipped(ParametersStore, environment)) {
+                            return
+                        }
+                        if (environment == 'PREP') {
+                            triggerSecurityPipeline()
+                        }
+                        if (environment == 'PROD') {
+                            stage('Mail Approval') {
+                                emailRecipients.requestToApprove()
+                            }
+                            stage('Approval') {
+                                approvers.approvers()
+                            }
+                        }
+                        stage('Deploy ' + environment) {
+                            JenkinsConfigRegional = RegionalConfig.getConfig(ParametersStore.store.WORLD_REGION, environment)
+                            stage('deploy-sdpr-' + region) {
+                                println('Deploying SDPR')
+                                JenkinsConfig.loadGlobalEnvVariables()
+                                JenkinsConfigRegional.loadDeployEnvVariables()
+                                JenkinsConfigRegional.loadDeploySdprEnvVariables()
+                                JenkinsConfigRegional.loadDeployMultichannelsEnvVariables()
+
+                                // Create/Update APIs
+                                // API: Multichannels 
+                                askInput("Deploy stage ${API_GW_STAGE_NAME} for api ${API_ID}?", ParametersStore)
+                                withAWS(region: "${DEPLOY_REGION}", role: "${SDPR_JENKINS_SLAVE_ROLE_NAME}",
+                                roleAccount: "${SDPR_ACCOUNT_ID}") {
+                                            sh 'sh ./scripts/deploy/api-deploy.sh'
+                                }
+                            }
+
+                            stage('deploy-fcl-'+region) {
+                                println("Deploying FCL");
+                                JenkinsConfig.loadGlobalEnvVariables()
+                                JenkinsConfigRegional.loadDeployEnvVariables()
+                                JenkinsConfigRegional.loadDeployFclEnvVariables()
+                                sh 'printenv'
+                                deployCF([
+                                    '0001ParamEnvironment': "${ENVIRONMENT}",
+                                    '0002ParamProjectName': "${PROJECT_NAME}",
+                                    '0003ParamProjectComponent': "${PROJECT_COMPONENT}",
+                                    '0004ParamFeatureName': "${FEATURE_NAME}",
+                                    '0005ParamFeatureCode': "${FEATURE_CODE}",
+                                    '0006ParamLambdaTracerLayer': "${PARAM_GCV_LAMBDA_TRACER_XRAY_LAYER}",
+                                    '0007ParamVersion': "${BRANCH_NAME}",
+                                    '0201ParamTelematicsApiID': "${TELEMATICS_API_ID}",
+                                    '0202ParamTelematicsAPIAccountID': "${FCL_ACCOUNT_ID}",
+                                    '0203ParamMultichannelsApiID': "${MULTICHANNELS_API_ID}",
+                                    '0204ParamMultichannelsAPIAccountID': "${SDPR_ACCOUNT_ID}",
+                                    '0205ParamDynamoDbKmsKeyArn': "${DYNAMODB_KMS_KEY_ARN}",
+                                    '0301ParamLambdaSubnetIdList': "${PARAM_SUBNET_ID_LIST_LAMBDA}",
+                                    '0302ParamLambdaSecuritygroupIdList': "${PARAM_SECURITYGROUP_ID_LIST_LAMBDA}",
+                                    '0401ParamIgniteApiHost': "${PARAM_IGNITE_API_HOST}",
+                                    '0402ParamEventDataStream': "${PARAM_EVENTS_DATA_STREAM}"
+                                ], null, null, ParametersStore)
+                            }
+
+                            // Create/Update APIs
+                            // API: Telematics
+                            JenkinsConfigRegional.loadDeployTelematicsEnvVariables()
+                            askInput("Deploy stage ${API_GW_STAGE_NAME} for api ${API_ID}?", ParametersStore)
+                            withAWS(region: "${DEPLOY_REGION}", role: "${FCL_JENKINS_SLAVE_ROLE_NAME}",
+                            roleAccount: "${FCL_ACCOUNT_ID}") {
+                                sh 'sh ./scripts/deploy/api-deploy.sh'
+                            }
+
+                            // RELEASE TRACKING --- START
+                            trackRelease(JenkinsConfig)
+                            // RELEASE TRACKING --- END
+                        }
+                    }
+                }
+            }
+        }
+    }
+    post {
+        success {
+            script {
+                if (!isStageToBeSkipped(ParametersStore, 'PROD')) {
+                    println('Sending success email')
+                    emailRecipients.emailSuccess()
+                }
+            }
+        }
+        failure {
+            script {
+                if (!isStageToBeSkipped(ParametersStore, 'PROD')) {
+                    println('Sending failure email')
+                    emailRecipients.emailFailed()
+                }
+            }
+        }
+    }
+}

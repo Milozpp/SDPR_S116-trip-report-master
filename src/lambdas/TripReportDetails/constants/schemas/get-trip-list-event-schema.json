@@ -1,0 +1,89 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "description": "schema to validate the vehicle association event",
+    "type": "object",
+    "properties": {
+        "pathParams": {
+            "type": "object",
+            "properties": {
+                "userid": {
+                    "type": "string"
+                },
+                "vin": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "userid",
+                "vin"
+            ]
+        },
+        "headers": {
+            "type": "object",
+            "properties": {
+                "x-device-id": {
+                    "type": "string"
+                },
+                "x-originator-type": {
+                    "type": "string"
+                },
+                "clientrequestid": {
+                    "type": "string"
+                },
+                "x-clientapp-name": {
+                    "type": "string"
+                },
+                "x-clientapp-version": {
+                    "type": "string"
+                },
+                "locale": {
+                    "type": "string"
+                },
+                "content-type": {
+                    "type": "string",
+                    "pattern": "^(application\/json)(.*)?$"
+                },
+                "Authorization":{
+                    "type": "string"
+                },
+                "x-api-key": {
+                    "type": "string"
+                  }
+            },
+            "required": [
+                "content-type",
+                "x-api-key",
+                "clientrequestid",
+                "x-originator-type"
+            ]
+        },
+        "queryStringParams": {
+            "type": "object",
+            "properties": {
+                "startTime": {
+                    "type": "string"
+                },
+                "endTime": {
+                    "type": "string"
+                },
+                "offset": {
+                    "type": "string"
+                },
+                "size": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "startTime",
+                "endTime",
+                "offset",
+                "size"
+            ]
+        }
+    },
+        "required": [
+            "pathParams",
+            "headers",
+            "queryStringParams"
+        ]
+}

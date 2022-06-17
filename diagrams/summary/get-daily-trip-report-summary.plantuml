@@ -1,0 +1,72 @@
+@startuml
+
+title Get Daily Trip Report Summary
+
+autonumber
+
+skinparam roundcorner 10
+skinparam shadowing false
+skinparam sequence {
+  ArrowColor Black
+  LifeLineBorderColor #94a4b6
+  LifeLineBackgroundColor #d9e8fb
+  ParticipantBorderColor #94a4b6
+  ParticipantBackgroundColor #d9e8fb
+  ParticipantFontSize 13
+  MessageAlign center
+  NoteBorderColor blue
+}
+skinparam Note {
+  BorderColor black
+  BackgroundColor white
+}
+
+participant "GMA" as GMA
+participant "API Gateway" as API
+participant "Trip Report Summmary Lambda" as Lambda
+participant "WISE" as WISE
+participant "IGNITE" as IGNITE
+
+note over API: SDPR
+/ note over Lambda, WISE: FCL
+
+activate GMA
+GMA -> API: send request
+
+activate API
+API -> Lambda: forward request
+
+activate Lambda
+Lambda -> Lambda: dispatch request
+
+Lambda -> WISE: getVehicleDetails
+activate WISE
+WISE -> Lambda: response
+deactivate WISE
+
+alt Vehicle NOT found
+  Lambda -> API: return //Vehicle not found//
+  API -> GMA: return //Vehicle not found//
+end
+
+Lambda -> Lambda: checkServiceId
+
+alt Service NOT enabled
+  Lambda -> API: return //Service not enabled//
+  API -> GMA: return //Service not enabled//
+end
+
+Lambda -> IGNITE: call ""GET /v1/tripreport/tripsummary/daily""
+activate IGNITE
+IGNITE -> Lambda: response
+deactivate IGNITE
+
+Lambda -> API: response
+deactivate Lambda
+
+API -> GMA: response
+deactivate API
+
+deactivate GMA
+
+@enduml

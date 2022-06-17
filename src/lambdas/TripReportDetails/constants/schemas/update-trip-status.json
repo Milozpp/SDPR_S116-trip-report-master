@@ -1,0 +1,354 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "description": "schema to validate the vehicle association event",
+    "type": "object",
+    "properties": {
+        "pathParams": {
+            "type": "object",
+            "properties": {
+                "userid": {
+                    "type": "string"
+                },
+                "vin": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "userid",
+                "vin"
+            ]
+        },
+        "headers": {
+            "type": "object",
+            "properties": {
+                "x-device-id": {
+                    "type": "string"
+                },
+                "x-originator-type": {
+                    "type": "string"
+                },
+                "clientrequestid": {
+                    "type": "string"
+                },
+                "x-clientapp-name": {
+                    "type": "string"
+                },
+                "x-clientapp-version": {
+                    "type": "string"
+                },
+                "locale": {
+                    "type": "string"
+                },
+                "content-type": {
+                    "type": "string",
+                    "pattern": "^(application\/json)(.*)?$"
+                },
+                "Authorization": {
+                    "type": "string"
+                },
+                "x-api-key": {
+                    "type": "string"
+                },
+                "sessionid": {
+                    "type": "string"
+                },
+                "platformresponseid": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "x-api-key",
+                "content-type",
+                "platformresponseid",
+                "sessionid"
+            ]
+        },
+        "requestBody": {
+            "$ref": "#/definitions/TripStatusRequest"
+        }
+    },
+    "required": [
+        "pathParams",
+        "headers",
+        "requestBody"
+    ],
+    "definitions": {
+        "TripStatusRequest": {
+            "type": "object",
+            "required": [
+                "EventID",
+                "Version",
+                "Timestamp",
+                "Data"
+            ],
+            "properties": {
+                "EventID": {
+                    "type": "string"
+                },
+                "Version": {
+                    "type": "string"
+                },
+                "Timestamp": {
+                    "type": "number"
+                },
+                "Data": {
+                    "$ref": "#/definitions/TripReportDetails"
+                }
+            }
+        },
+        "TripReportDetails": {
+            "type": "object",
+            "required": [
+                "tripId",
+                "duration",
+                "distance",
+                "startTime",
+                "endTime",
+                "averageSpeed",
+                "topSpeed",
+                "dayDrive",
+                "nightDrive",
+                "isBusinessTrip",
+                "isFavouriteTrip",
+                "startLocation",
+                "endLocation",
+                "driveStyles",
+                "cost",
+                "encodedMapData",
+                "fullLocation",
+                "ecoData",
+                "profiles"
+            ],
+            "properties": {
+                "tripId": {
+                    "type": "string"
+                },
+                "travelDate": {
+                    "type": "number"
+                },
+                "duration": {
+                    "type": "number"
+                },
+                "distance": {
+                    "type": "number"
+                },
+                "startTime": {
+                    "type": "number"
+                },
+                "endTime": {
+                    "type": "number"
+                },
+                "averageSpeed": {
+                    "type": "number"
+                },
+                "topSpeed": {
+                    "type": "number"
+                },
+                "dayDrive": {
+                    "type": "number"
+                },
+                "nightDrive": {
+                    "type": "number"
+                },
+                "isBusinessTrip": {
+                    "type": "boolean"
+                },
+                "isFavouriteTrip": {
+                    "type": "boolean"
+                },
+                "startLocation": {
+                    "$ref": "#/definitions/RequiredLocation"
+                },
+                "endLocation": {
+                    "$ref": "#/definitions/RequiredLocation"
+                },
+                "evModePercentage": {
+                    "type": "number"
+                },
+                "driveStyles": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/DriveStyle"
+                    }
+                },
+                "numHardBraking": {
+                    "type": "number"
+                },
+                "numHardAcceleration": {
+                    "type": "number"
+                },
+                "numHardCornering": {
+                    "type": "number"
+                },
+                "numBoundary": {
+                    "type": "number"
+                },
+                "isBoundaryOn": {
+                    "type": "boolean"
+                },
+                "cost": {
+                    "type": "number"
+                },
+                "idleTime": {
+                    "type": "number"
+                },
+                "encodedMapData": {
+                    "type": "string"
+                },
+                "fuelEfficiency": {
+                    "type": "number"
+                },
+                "fullLocation": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/RequiredLocation"
+                    }
+                },
+                "ecoData": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/EcoData"
+                    }
+                },
+                "evMode": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/EvMode"
+                    }
+                },
+                "hardBraking": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/LocationHardEvent"
+                    }
+                },
+                "hardAcceleration": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/LocationHardEvent"
+                    }
+                },
+                "hardCornering": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/LocationHardEvent"
+                    }
+                },
+                "boundary": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/Location"
+                    }
+                },
+                "profiles": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/Profile"
+                    }
+                }
+            }
+        },
+        "RequiredLocation": {
+            "type": "object",
+            "required": [
+                "latitude",
+                "longitude",
+                "timestamp"
+            ],
+            "properties": {
+                "latitude": {
+                    "type": "number"
+                },
+                "longitude": {
+                    "type": "number"
+                },
+                "timestamp": {
+                    "type": "number"
+                }
+            }
+        },
+        "Location": {
+            "type": "object",
+            "properties": {
+                "latitude": {
+                    "type": "number"
+                },
+                "longitude": {
+                    "type": "number"
+                },
+                "timestamp": {
+                    "type": "number"
+                }
+            }
+        },
+        "DriveStyle": {
+            "type": "object",
+            "properties": {
+                "style": {
+                    "type": "string"
+                },
+                "duration": {
+                    "type": "number"
+                }
+            }
+        },
+        "EcoData": {
+            "type": "object",
+            "required": [
+                "ecoScore",
+                "tripId",
+                "profile"
+            ],
+            "properties": {
+                "ecoScore": {
+                    "type": "number"
+                },
+                "tripId": {
+                    "type": "string"
+                },
+                "profile": {
+                    "type": "string"
+                }
+            }
+        },
+        "EvMode": {
+            "type": "object",
+            "properties": {
+                "locations": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/Location"
+                    }
+                }
+            }
+        },
+        "LocationHardEvent": {
+            "type": "object",
+            "properties": {
+                "latitude": {
+                    "type": "number"
+                },
+                "longitude": {
+                    "type": "number"
+                },
+                "timestamp": {
+                    "type": "number"
+                },
+                "duration": {
+                    "type": "number"
+                }
+            }
+        },
+        "Profile": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "timestamp": {
+                    "type": "number"
+                }
+            }
+        }
+    }
+}

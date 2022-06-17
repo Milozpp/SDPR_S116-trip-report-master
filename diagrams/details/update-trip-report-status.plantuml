@@ -1,0 +1,92 @@
+@startuml
+
+title Update Trip Report Status
+
+autonumber
+
+skinparam roundcorner 10
+skinparam shadowing false
+skinparam sequence {
+  ArrowColor Black
+  LifeLineBorderColor #94a4b6
+  LifeLineBackgroundColor #d9e8fb
+  ParticipantBorderColor #94a4b6
+  ParticipantBackgroundColor #d9e8fb
+  ParticipantFontSize 13
+  MessageAlign center
+  NoteBorderColor blue
+}
+skinparam Note {
+  BorderColor black
+  BackgroundColor white
+}
+
+participant "IGNITE" as IGNITE
+participant "API Gateway" as API
+participant "Trip Report Details Lambda" as Lambda
+participant "WISE" as WISE
+participant "GCV_LAST_TRIP_REPORT" as DDB
+participant "gcv-fcl-events" as Kinesis
+participant "TOMTOM" as TOMTOM
+
+note over API, Kinesis: FCL
+
+activate IGNITE
+IGNITE -> API: send new trip report
+
+activate API
+API -> Lambda: forward request
+
+activate Lambda
+Lambda -> Lambda: dispatch request
+
+Lambda -> WISE: getVehicleDetails
+activate WISE
+WISE -> Lambda: response
+deactivate WISE
+
+alt Vehicle NOT found
+  Lambda -> API: return //Vehicle not found//
+  API -> IGNITE: return //Vehicle not found//
+end
+
+Lambda -> Lambda: checkServiceId
+
+alt Service NOT enabled
+  Lambda -> API: return //Service not enabled//
+  API -> IGNITE: return //Service not enabled//
+end
+
+Lambda -> TOMTOM: //POI Search// and //Reverse Geocode//
+activate TOMTOM
+TOMTOM -> Lambda: response
+deactivate TOMTOM
+
+Lambda -> Lambda: //startLocation// and //endLocation// enrichment
+
+Lambda -> DDB: save tripid and enriched locations
+activate DDB
+
+alt timestamp of the trip report received is OLDER than last trip saved
+  DDB -> Lambda: throw PreconditionFailed
+  Lambda -> API: throw InvalidRequestParameter
+  API -> IGNITE: return //Invalid Timestamp//
+end
+
+DDB -> Lambda: response
+deactivate DDB
+
+
+Lambda -> Kinesis: publishEvent (trigger //Entity Sync//)
+activate Kinesis
+deactivate Kinesis
+
+Lambda -> API: response
+deactivate Lambda
+
+API -> IGNITE: response
+deactivate API
+
+deactivate IGNITE
+
+@enduml

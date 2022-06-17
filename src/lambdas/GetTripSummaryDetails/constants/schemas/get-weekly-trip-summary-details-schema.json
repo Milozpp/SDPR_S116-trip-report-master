@@ -1,0 +1,86 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "$id": "GetWeeklyTripSummaryDetails",
+    "title": "GetWeeklyTripSummaryDetails",
+    "description": "Get weekly Trip summary details between given start and end time",
+    "type": "object",
+    "required": [
+        "pathParams",
+        "headers",
+        "queryStringParams"
+    ],
+    "properties": {
+        "pathParams": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+                "userid",
+                "vin"
+            ],
+            "properties": {
+                "userid": {
+                    "type": "string"
+                },
+                "vin": {
+                    "type": "string"
+                }
+            }
+        },
+        "headers": {
+            "type": "object",
+            "required": [
+                "content-type",
+                "x-originator-type",
+                "clientrequestid",
+                "x-api-key"
+            ],
+            "properties": {
+                "content-type": {
+                    "type": "string",
+                    "pattern": "^(application\/json)(.*)?$"
+                },
+                "locale": {
+                    "type": "string"
+                },
+                "x-originator-type": {
+                    "type": "string",
+                    "enum": [
+                        "web",
+                        "app",
+                        "server"
+                    ]
+                },
+                "clientrequestid": {
+                    "type": "string"
+                },
+                "x-api-key": {
+                    "type": "string"
+                }
+            }
+        },
+        "queryStringParams": {
+            "type": "object",
+            "required": [
+                "till",
+                "offset",
+                "size"
+            ],
+            "properties": {
+                "since": {
+                    "type": "string"
+                },
+                "till": {
+                    "type": "string"
+                },
+                "offset": {
+                    "type": "string"
+                },
+                "size": {
+                    "type": "string"
+                }
+               
+            }
+          }
+ 
+    }
+}

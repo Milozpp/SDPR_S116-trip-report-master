@@ -1,0 +1,56 @@
+@startuml
+
+title Post Default Trip Report Settings
+
+autonumber
+
+skinparam roundcorner 10
+skinparam shadowing false
+skinparam sequence {
+  ArrowColor Black
+  LifeLineBorderColor #94a4b6
+  LifeLineBackgroundColor #d9e8fb
+  ParticipantBorderColor #94a4b6
+  ParticipantBackgroundColor #d9e8fb
+  ParticipantFontSize 13
+  MessageAlign center
+  NoteBorderColor blue
+}
+skinparam Note {
+  BorderColor black
+  BackgroundColor white
+}
+
+participant "GMA" as GMA
+participant "API Gateway" as API
+participant "Trip Report Settings Lambda" as Lambda
+participant "IGNITE" as IGNITE
+
+note over API: SDPR
+/ note over Lambda: FCL
+
+activate GMA
+GMA -> API: send request
+
+activate API
+API -> Lambda: forward request
+
+activate Lambda
+Lambda -> Lambda: dispatch request
+
+Lambda -> Lambda: convert "fuelCostPerGallon"\ninto "costPerLiter"
+
+Lambda -> IGNITE: call "POST /v1/tripreport/customize"
+activate IGNITE
+IGNITE -> Lambda: response
+deactivate IGNITE
+
+Lambda -> API: response
+deactivate Lambda
+
+API -> GMA: response
+deactivate API
+
+deactivate GMA
+
+@enduml

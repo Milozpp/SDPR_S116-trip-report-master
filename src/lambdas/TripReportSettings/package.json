@@ -1,0 +1,87 @@
+{
+  "name": "TripReportSettings",
+  "version": "1.0.0",
+  "description": "This lambda gets/updates the trip report settings",
+  "main": "dist/handler",
+  "types": "dist/handler",
+  "repository": {
+    "type": "git",
+    "url": "git@gsdp.github.intra.fcagroup.com:GSDPSdpRouter/SDPR_STR-TRIP-REPORT.git"
+  },
+  "directories": {
+    "test": "test"
+  },
+  "config": {
+    "mocha-sonar-reporter": {
+      "outputfile": "test/TEST-all.xml"
+    }
+  },
+  "dependencies": {
+    "ajv": "^8.6.1",
+    "gcv-auth": "git+ssh://git@gsdp.github.intra.fcagroup.com/GSDPSdpRouter/gcv-auth#v1.8",
+    "gcv-cache": "git+ssh://git@gsdp.github.intra.fcagroup.com/GSDPSdpRouter/gcv-cache.git#v1.10",
+    "gcv-common-services": "git+ssh://git@gsdp.github.intra.fcagroup.com/GSDPSdpRouter/gcv-common-services.git#v1.5.3",
+    "gcv-db-factory": "git+ssh://git@gsdp.github.intra.fcagroup.com:GSDPCustomLayer/gcv-db-factory.git#v1.5",
+    "gcv-dynamodb-dao": "git+ssh://git@gsdp.github.intra.fcagroup.com:GSDPCustomLayer/gcv-dynamodb-dao.git#v1.12.37",
+    "gcv-db-interface": "git+ssh://git@gsdp.github.intra.fcagroup.com:GSDPCustomLayer/gcv-db-interface.git#v1.0",
+    "gcv-http-utils": "git+ssh://git@gsdp.github.intra.fcagroup.com/GSDPSdpRouter/gcv-http-utils#v1.7",
+    "gcv-logger": "git+ssh://git@gsdp.github.intra.fcagroup.com/GSDPSdpRouter/gcv-logger.git#v1.3",
+    "gcv-utilities": "git+ssh://git@gsdp.github.intra.fcagroup.com:GSDPSdpRouter/gcv-utilities.git#v1.8.6",
+    "gcv-utils": "git+ssh://git@gsdp.github.intra.fcagroup.com:GSDPSdpRouter/gcv-utils.git#v2.24",
+    "gcv-vehicle-dao": "git+ssh://git@gsdp.github.intra.fcagroup.com:GSDPCustomLayer/gcv-vehicle-dao.git#v5.31",
+    "gcv-ignite": "git+ssh://git@gsdp.github.intra.fcagroup.com/GSDPSdpRouter/gcv-ignite.git#v3.0.9"
+  },
+  "devDependencies": {
+    "gcv-testing-utilities": "git+ssh://git@gsdp.github.intra.fcagroup.com:GSDPSdpRouter/gcv-testing-utilities.git#v1.1",
+    "aws-lambda": "^1.0.6",
+    "@types/aws-lambda": "^8.10.66",
+    "@types/chai-as-promised": "^7.1.2",
+    "@types/mocha": "^5.2.7",
+    "@types/node": "^14.0.0",
+    "@types/sinon": "^7.0.13",
+    "@types/uuid": "^8.0.0",
+    "@typescript-eslint/eslint-plugin": "^2.3.1",
+    "@typescript-eslint/parser": "^2.3.1",
+    "aws-sdk": "^2.320.0",
+    "chai": "^4.2.0",
+    "chai-as-promised": "^7.1.1",
+    "eslint": "^6.4.0",
+    "eslint-plugin-json": "^2.0.1",
+    "mocha": "^6.2.0",
+    "nyc": "^14.1.1",
+    "sinon": "^7.4.2",
+    "source-map-support": "^0.5.13",
+    "ts-node": "^8.3.0",
+    "typescript": "^4.1.5"
+  },
+  "keywords": [
+    "UpdateAssociation"
+  ],
+  "author": "iHSF",
+  "license": "UNLICENSED",
+  "scripts": {
+    "test": "nyc mocha -r ts-node/register -r source-map-support/register 'test/**/*test.ts'",
+    "prebuild": "rm -r dist && echo 'Dist folder removed' || echo 'Dist folder does not exist'",
+    "build": "tsc",
+    "copydependencies": "cp -r node_modules dist",
+    "zip": "cd dist && zip -r package.zip . && cd ..",
+    "lint": "eslint \"src/**\"",
+    "preDeploy": "npm i --package-lock-only"
+  },
+  "nyc": {
+    "extension": [
+      ".ts",
+      ".tsx"
+    ],
+    "include": [
+      "src"
+    ],
+    "exclude": [
+      "**/*.d.ts"
+    ],
+    "reporter": [
+      "lcov"
+    ],
+    "all": true
+  }
+}
